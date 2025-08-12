@@ -177,7 +177,7 @@ const resetPassword = async (req, res) => {
     const { id } = req.params;
 
     const resetRequest = await ForgotPasswordRequests.findOne({
-      _id: id,
+      id: id,
       isActive: true,
     });
 
@@ -186,7 +186,7 @@ const resetPassword = async (req, res) => {
     }
 
     res.sendFile(
-      "/home/aayush-srivastav/Desktop/Sharpener Prac/Project/Day-to-Day-Expense-App/view/resetPassword.html"
+      "/home/aayush-srivastav/Desktop/Sharpener Prac/Testing of AWS Projects/testMongo/Expense Tracker mongo/Expense-Tracker-mongo/view/resetPassword.html"
     );
   } catch (error) {
     console.log(error);

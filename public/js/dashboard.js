@@ -190,10 +190,26 @@ async function deleteData(id, li) {
       },
     })
     .then(() => {
-      li.remove();
-      // Refresh the data
-      fetchExpenses();
+      const totalPagesBeforeDelete = Math.ceil(
+        allExpenses.length / itemsPerPage
+      );
+      allExpenses = allExpenses.filter((expense) => expense._id !== id);
+
+      // Calculate new total pages AFTER deletion
+      const totalPagesAfterDelete = Math.ceil(
+        allExpenses.length / itemsPerPage
+      );
+
+      // Adjust current page if needed
+      if (currentPage > totalPagesAfterDelete && totalPagesAfterDelete > 0) {
+        currentPage = totalPagesAfterDelete;
+      } else if (totalPagesAfterDelete === 0) {
+        currentPage = 1;
+      }
+
+      // Re-render with updated data
       renderPage(currentPage);
+      renderPaginationControls();
     })
     .catch((err) => {
       alert("Error in deleting expense");

@@ -296,7 +296,8 @@ function leaderboardMessage() {
 
 leaderBtn.addEventListener("click", async () => {
   document.querySelector("#leaderboard-list > h4").style.visibility = "visible";
-  const ul = document.createElement("ul");
+  const ul = document.querySelector("#leaderboard-ul");
+  ul.innerHTML= "";
   const list = await axios.get(`${path}/api/premium/leaderboard `);
   const listArr = list.data.data;
 

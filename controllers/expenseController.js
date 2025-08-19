@@ -219,7 +219,7 @@ const downloadExpenseReport = async (req, res) => {
     // 3. create a temporary file-unique everytime
     const dir = path.join(__dirname, "..", "temp");
     
-    const filepath = path.join(dir, `expenses_${Date.now()}.csv`);
+    const filepath = path.join(dir, `expenses.csv`);
 
     fs.writeFileSync(filepath, csvData, "utf8");
 

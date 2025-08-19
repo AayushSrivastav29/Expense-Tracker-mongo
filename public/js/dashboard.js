@@ -5,7 +5,7 @@ let itemsPerPage;
 let rows;
 let allExpenses = [];
 let token;
-const path = "http://localhost:3000";
+const path = "https://expense-tracker-qcaa.onrender.com";
 
 function initialize() {
   token = localStorage.getItem("token");

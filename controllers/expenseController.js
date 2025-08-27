@@ -2,9 +2,8 @@ const User = require("../models/userModel");
 const Expense = require("../models/expenseModel");
 const sequelize = require("../utils/db-connection");
 const fs = require("fs");
-const path = require("path");
 const mongoose = require('mongoose');
-//https://meet.google.com/ksz-kviv-kzy
+const path = require("path");
 //create
 const createExpense = async (req, res) => {
   try {
@@ -215,25 +214,35 @@ const downloadExpenseReport = async (req, res) => {
       const savings = data.income - data.expense;
       csvData += `${year},${data.income},${data.expense},${savings}\n`;
     });
-    const path = require("path");
-    // 3. create a temporary file-unique everytime
+     // 6. Create temp directory and file
     const dir = path.join(__dirname, "..", "temp");
+    console.log(dir);
     
-    const filepath = path.join(dir, `expenses.csv`);
-
+    // Create temp directory if it doesn't exist
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    
+    const filepath = path.join(dir, `expenses-${userId}-${Date.now()}.csv`);
     fs.writeFileSync(filepath, csvData, "utf8");
-
+    
     res.download(filepath, "expenses.csv", (err) => {
       if (err) {
         console.error("Error in downloading file: ", err);
       }
-      fs.unlinkSync(filepath);
+      // Clean up: delete the temporary file
+      try {
+        fs.unlinkSync(filepath);
+      } catch (unlinkErr) {
+        console.error("Error deleting temporary file:", unlinkErr);
+      }
     });
+    
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res
       .status(500)
-      .json({ success: false, message: "Failed to send expenses to AWS" });
+      .json({ success: false, message: "Failed to generate expense report" });
   }
 };
 

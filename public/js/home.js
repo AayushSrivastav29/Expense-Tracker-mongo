@@ -20,8 +20,8 @@ loginForm.addEventListener("submit", async function (e) {
     .post(`${path}/api/user/find`, userDetails)
     .then((result) => {
       localStorage.setItem("token", result.data.token);
-      localStorage.setItem('isPremium', result.data.user.isPremium)
-      localStorage.setItem('name', result.data.user.name)
+      localStorage.setItem("isPremium", result.data.user.isPremium);
+      localStorage.setItem("name", result.data.user.name);
       //console.log(result);
       //
       loginMessage.classList.remove("d-none", "alert-danger", "alert-success");
@@ -29,9 +29,9 @@ loginForm.addEventListener("submit", async function (e) {
       loginMessage.textContent = `Login successful! Redirecting...`;
 
       // Redirect after 2 seconds
-       setTimeout(() => {
-         window.location.href = "/dashboard.html";
-       }, 2000);
+      setTimeout(() => {
+        window.location.href = "/dashboard.html";
+      }, 2000);
     })
     .catch((err) => {
       //console.log(err);
@@ -39,8 +39,6 @@ loginForm.addEventListener("submit", async function (e) {
       loginMessage.classList.add("alert-success");
       loginMessage.textContent = `${err.response.data}`;
     });
-
-  
 });
 
 // Signup Form Handling
@@ -70,26 +68,29 @@ signupForm.addEventListener("submit", async function (e) {
     password: password,
   };
 
-  const result = await axios.post(
-    `${path}/api/user/create`,
-    newUser
-  );
-  //console.log(result);
-
-  // Simulate API call
-  setTimeout(() => {
+  try {
+    const result = await axios.post(`${path}/api/user/create`, newUser);
+    // Simulate API call
+    setTimeout(() => {
+      signupMessage.classList.remove("d-none", "alert-danger");
+      signupMessage.classList.add("alert-success");
+      signupMessage.textContent = result.response.data.message;
+      console.log(result.response.data.message);
+      // Close modal after 2 seconds.
+      setTimeout(() => {
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("signupModal")
+        );
+        modal.hide();
+      }, 2000);
+    }, 1000);
+  } catch (error) {
+    console.log("error :>> ", error);
     signupMessage.classList.remove("d-none", "alert-danger");
     signupMessage.classList.add("alert-success");
-    signupMessage.textContent = "Account created successfully!";
+    signupMessage.textContent = error.response.data.message;
+  }
 
-    // Close modal after 2 seconds
-    setTimeout(() => {
-      const modal = bootstrap.Modal.getInstance(
-        document.getElementById("signupModal")
-      );
-      modal.hide();
-    }, 2000);
-  }, 1000);
 });
 
 // Forgot Password Form Handling
@@ -101,8 +102,8 @@ forgotPasswordForm.addEventListener("submit", async function (e) {
 
   const email = document.getElementById("forgotEmail").value;
 
-  await axios.post(`${path}/api/user/forgotpassword`, {email: email});
-  
+  await axios.post(`${path}/api/user/forgotpassword`, { email: email });
+
   // Simulate API call
   setTimeout(() => {
     forgotPasswordMessage.classList.remove("d-none", "alert-danger");
@@ -110,7 +111,6 @@ forgotPasswordForm.addEventListener("submit", async function (e) {
     forgotPasswordMessage.textContent =
       "Password reset link sent to your email!";
 
-      
     // Close modal after 3 seconds
     setTimeout(() => {
       const modal = bootstrap.Modal.getInstance(
@@ -146,11 +146,10 @@ tooltipTriggerList.map(function (tooltipTriggerEl) {
   return new bootstrap.Tooltip(tooltipTriggerEl);
 });
 
-
 // Premium Modal Handler
 document.getElementById("upgradeButton").addEventListener("click", () => {
   const token = localStorage.getItem("token");
-  
+
   if (!token) {
     // If not logged in, show login modal
     $("#premiumModal").modal("hide");
@@ -168,5 +167,3 @@ function showError(message) {
   messageDiv.textContent = message;
   document.querySelector("#premiumModal .modal-body").appendChild(messageDiv);
 }
-
-

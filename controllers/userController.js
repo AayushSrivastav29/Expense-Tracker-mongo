@@ -50,7 +50,7 @@ const createUser = async (req, res) => {
     // Check for existing user
     const existingUser = await Users.findOne({ email });
     if (existingUser) {
-      return res.status(400).send("Email already in use");
+      return res.status(400).json({success: false, message :`Email already in use`});
     }
     const saltRounds = 10;
     bcrypt.hash(password, saltRounds, async (err, hash) => {
@@ -61,11 +61,11 @@ const createUser = async (req, res) => {
         email: email,
         password: hash,
       });
-      res.status(201).send(`user signed up successfully`);
+      res.status(201).json({success: true, message :`user signed up successfully`});
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send(`make sure to use unique email id`);
+    res.status(500).json({success: false, message :`make sure to use unique email id`});
   }
 };
 

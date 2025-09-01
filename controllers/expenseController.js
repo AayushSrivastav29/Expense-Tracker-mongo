@@ -2,7 +2,7 @@ const User = require("../models/userModel");
 const Expense = require("../models/expenseModel");
 const sequelize = require("../utils/db-connection");
 const fs = require("fs");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const path = require("path");
 //create
 const createExpense = async (req, res) => {
@@ -115,10 +115,17 @@ const updateExpense = async (req, res) => {
     await expenseToUpdate.save();
 
     //update user totalExpense
-    const diff = oldAmount - newAmount;
-    await User.findByIdAndUpdate(userId, {
-      $inc: { totalExpense: diff },
-    });
+    if (oldAmount < newAmount) {
+      const subtract = oldAmount - newAmount;
+      await User.findByIdAndUpdate(userId, {
+        $inc: { totalExpense: -subtract },
+      });
+    } else {
+      const add = newAmount - oldAmount;
+      await User.findByIdAndUpdate(userId, {
+        $inc: { totalExpense: add },
+      });
+    }
 
     res.status(200).json(expenseToUpdate);
   } catch (error) {
@@ -214,18 +221,18 @@ const downloadExpenseReport = async (req, res) => {
       const savings = data.income - data.expense;
       csvData += `${year},${data.income},${data.expense},${savings}\n`;
     });
-     // 6. Create temp directory and file
+    // 6. Create temp directory and file
     const dir = path.join(__dirname, "..", "temp");
     console.log(dir);
-    
+
     // Create temp directory if it doesn't exist
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    
+
     const filepath = path.join(dir, `expenses-${userId}-${Date.now()}.csv`);
     fs.writeFileSync(filepath, csvData, "utf8");
-    
+
     res.download(filepath, "expenses.csv", (err) => {
       if (err) {
         console.error("Error in downloading file: ", err);
@@ -237,7 +244,6 @@ const downloadExpenseReport = async (req, res) => {
         console.error("Error deleting temporary file:", unlinkErr);
       }
     });
-    
   } catch (error) {
     console.log(error);
     res

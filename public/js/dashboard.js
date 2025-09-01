@@ -45,20 +45,18 @@ function fetchExpenses() {
     })
     .then((result) => {
       allExpenses = result.data;
-      if (allExpenses.length === 0) {
-        const ul = document.querySelector("ul");
-        const li = document.createElement("li");
-        li.textContent = `Create an expense`;
-        li.style.listStyle = "none";
-        li.style.color = "green";
-        ul.appendChild(li);
-      }
       //console.log(allExpenses);
       renderPage(currentPage); // Render first page initially
       renderPaginationControls();
     })
     .catch((err) => {
-      alert(`Error in fetching data`);
+      console.log('err :>> ', err.response.data);
+      const ul = document.querySelector("ul");
+        const li = document.createElement("li");
+        li.textContent = err.response.data;
+        li.style.listStyle = "none";
+        li.style.color = "green";
+        ul.appendChild(li);
     });
 }
 
